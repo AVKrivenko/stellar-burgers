@@ -1,61 +1,81 @@
-import { ProfileUI } from '@ui-pages';
-import { FC, SyntheticEvent, useEffect, useState } from 'react';
+import { FC, useState, useEffect } from 'react';
+import { useDispatch, useSelector } from '../../services/store';
+import { updateUser } from '../../services/slices/userSlice';
+import { ProfileUI } from '../../components/ui/pages/profile';
 
 export const Profile: FC = () => {
-  /** TODO: взять переменную из стора */
-  const user = {
-    name: '',
-    email: ''
-  };
+  const dispatch = useDispatch();
+  const { user } = useSelector((state) => state.user);
 
   const [formValue, setFormValue] = useState({
-    name: user.name,
-    email: user.email,
+    name: user?.name || '',
+    email: user?.email || '',
     password: ''
   });
 
+  const [isFormChanged, setIsFormChanged] = useState(false);
+  const [updateUserError, setUpdateUserError] = useState<string | undefined>(
+    undefined
+  );
+
   useEffect(() => {
-    setFormValue((prevState) => ({
-      ...prevState,
-      name: user?.name || '',
-      email: user?.email || ''
-    }));
+    if (user) {
+      setFormValue({
+        name: user.name || '',
+        email: user.email || '',
+        password: ''
+      });
+      setIsFormChanged(false);
+    }
   }, [user]);
 
-  const isFormChanged =
-    formValue.name !== user?.name ||
-    formValue.email !== user?.email ||
-    !!formValue.password;
-
-  const handleSubmit = (e: SyntheticEvent) => {
-    e.preventDefault();
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormValue({ ...formValue, [e.target.name]: e.target.value });
+    setIsFormChanged(true);
   };
 
-  const handleCancel = (e: SyntheticEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    setUpdateUserError(undefined);
+
+    const data: any = {};
+    if (formValue.name !== user?.name) data.name = formValue.name;
+    if (formValue.email !== user?.email) data.email = formValue.email;
+    if (formValue.password) data.password = formValue.password;
+
+    if (Object.keys(data).length === 0) {
+      setIsFormChanged(false);
+      return;
+    }
+
+    dispatch(updateUser(data))
+      .unwrap()
+      .then(() => {
+        setIsFormChanged(false);
+      })
+      .catch((err) => {
+        setUpdateUserError(err.message || 'Ошибка обновления профиля');
+      });
+  };
+
+  const handleCancel = () => {
     setFormValue({
-      name: user.name,
-      email: user.email,
+      name: user?.name || '',
+      email: user?.email || '',
       password: ''
     });
-  };
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormValue((prevState) => ({
-      ...prevState,
-      [e.target.name]: e.target.value
-    }));
+    setIsFormChanged(false);
+    setUpdateUserError(undefined);
   };
 
   return (
     <ProfileUI
       formValue={formValue}
       isFormChanged={isFormChanged}
-      handleCancel={handleCancel}
+      updateUserError={updateUserError}
       handleSubmit={handleSubmit}
+      handleCancel={handleCancel}
       handleInputChange={handleInputChange}
     />
   );
-
-  return null;
 };

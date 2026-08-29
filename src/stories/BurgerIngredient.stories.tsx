@@ -1,53 +1,46 @@
-import React from 'react';
-import { BurgerIngredientUI } from '@ui';
 import type { Meta, StoryObj } from '@storybook/react';
+import { BurgerIngredientUI } from '@ui';
+import { TIngredient } from '@utils-types';
 
-const meta = {
-  title: 'Example/BurgerIngredient',
+const mockIngredient: TIngredient = {
+  _id: '1',
+  name: 'Краторная булка N-200i',
+  type: 'bun',
+  proteins: 80,
+  fat: 24,
+  carbohydrates: 53,
+  calories: 420,
+  price: 1255,
+  image: 'https://code.s3.yandex.net/react/code/bun-01.png',
+  image_mobile: 'https://code.s3.yandex.net/react/code/bun-01-mobile.png',
+  image_large: 'https://code.s3.yandex.net/react/code/bun-01-large.png'
+};
+
+const meta: Meta<typeof BurgerIngredientUI> = {
+  title: 'Components/BurgerIngredient',
   component: BurgerIngredientUI,
-  // This component will have an automatically generated Autodocs entry: https://storybook.js.org/docs/writing-docs/autodocs
-  tags: ['autodocs'],
   parameters: {
-    // More on how to position stories at: https://storybook.js.org/docs/configure/story-layout
-    layout: 'fullscreen'
-  },
-  decorators: [
-    (Story) => (
-      <div style={{ width: 'fit-content', margin: 20 }}>
-        <Story />
-      </div>
-    )
-  ]
-} satisfies Meta<typeof BurgerIngredientUI>;
+    layout: 'centered'
+  }
+};
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj<typeof BurgerIngredientUI>;
 
-export const DefaultIngredient: Story = {
+export const Default: Story = {
   args: {
-    ingredient: {
-      _id: '111',
-      name: 'Булка',
-      type: 'top',
-      proteins: 12,
-      fat: 33,
-      carbohydrates: 22,
-      calories: 33,
-      price: 123,
-      image: '',
-      image_large: '',
-      image_mobile: ''
-    },
-    count: 2,
-    locationState: {
-      background: {
-        hash: '',
-        key: 'eitkep27',
-        pathname: '/',
-        search: '',
-        state: null
-      }
-    },
+    ingredient: mockIngredient,
+    count: 0,
+    locationState: { background: {} as any },
+    handleAdd: () => {}
+  }
+};
+
+export const WithCount: Story = {
+  args: {
+    ingredient: mockIngredient,
+    count: 5,
+    locationState: { background: {} as any },
     handleAdd: () => {}
   }
 };

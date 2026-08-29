@@ -1,13 +1,17 @@
 import { FC } from 'react';
-
 import styles from './constructor-page.module.css';
-
-import { ConstructorPageUIProps } from './type';
 import { Preloader } from '@ui';
 import { BurgerIngredients, BurgerConstructor } from '@components';
+import { TIngredient } from '@utils-types';
+
+interface ConstructorPageUIProps {
+  isIngredientsLoading: boolean;
+  ingredients: TIngredient[];
+}
 
 export const ConstructorPageUI: FC<ConstructorPageUIProps> = ({
-  isIngredientsLoading
+  isIngredientsLoading,
+  ingredients
 }) => (
   <>
     {isIngredientsLoading ? (
@@ -20,7 +24,7 @@ export const ConstructorPageUI: FC<ConstructorPageUIProps> = ({
           Соберите бургер
         </h1>
         <div className={`${styles.main} pl-5 pr-5`}>
-          <BurgerIngredients />
+          <BurgerIngredients ingredients={ingredients} />
           <BurgerConstructor />
         </div>
       </main>

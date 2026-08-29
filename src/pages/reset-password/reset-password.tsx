@@ -1,39 +1,42 @@
-import { FC, SyntheticEvent, useEffect, useState } from 'react';
+import { FC, useState } from 'react';
+import { useDispatch } from '../../services/store';
+import { resetPassword } from '../../services/slices/userSlice';
+import { ResetPasswordUI } from '../../components/ui/pages/reset-password';
 import { useNavigate } from 'react-router-dom';
 
-import { resetPasswordApi } from '@api';
-import { ResetPasswordUI } from '@ui-pages';
-
 export const ResetPassword: FC = () => {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const [password, setPassword] = useState('');
   const [token, setToken] = useState('');
-  const [error, setError] = useState<Error | null>(null);
+  const [errorText, setErrorText] = useState('');
 
-  const handleSubmit = (e: SyntheticEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setError(null);
-    resetPasswordApi({ password, token })
+    setErrorText('');
+
+    if (!password || !token) {
+      setErrorText('Заполните все поля');
+      return;
+    }
+
+    dispatch(resetPassword({ password, token }))
+      .unwrap()
       .then(() => {
-        localStorage.removeItem('resetPassword');
         navigate('/login');
       })
-      .catch((err) => setError(err));
+      .catch((err: { message: string }) => {
+        setErrorText(err.message || 'Ошибка сброса пароля');
+      });
   };
-
-  useEffect(() => {
-    if (!localStorage.getItem('resetPassword')) {
-      navigate('/forgot-password', { replace: true });
-    }
-  }, [navigate]);
 
   return (
     <ResetPasswordUI
-      errorText={error?.message}
       password={password}
-      token={token}
       setPassword={setPassword}
+      token={token}
       setToken={setToken}
+      errorText={errorText}
       handleSubmit={handleSubmit}
     />
   );

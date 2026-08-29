@@ -1,20 +1,40 @@
-import { useSelector } from '../../services/store';
+import { useEffect } from 'react';
+import { useDispatch, useSelector } from '../../services/store';
+import { fetchIngredients } from '../../services/slices/ingredientsSlice';
+import { ConstructorPageUI } from '../../components/ui/pages/constructor-page';
 
-import styles from './constructor-page.module.css';
+export const ConstructorPage = () => {
+  const dispatch = useDispatch();
+  const {
+    items: ingredients,
+    isLoading,
+    error
+  } = useSelector((state) => state.ingredients);
 
-import { BurgerIngredients } from '../../components';
-import { BurgerConstructor } from '../../components';
-import { Preloader } from '../../components/ui';
-import { FC } from 'react';
+  useEffect(() => {
+    dispatch(fetchIngredients());
+  }, [dispatch]);
 
-export const ConstructorPage: FC = () => (
-  <main className={styles.containerMain}>
-    <h1 className={`${styles.title} text text_type_main-large mt-10 mb-5 pl-5`}>
-      Соберите бургер
-    </h1>
-    <div className={`${styles.main} pl-5 pr-5`}>
-      <BurgerIngredients />
-      <BurgerConstructor />
-    </div>
-  </main>
-);
+  if (error) {
+    return (
+      <div style={{ textAlign: 'center', padding: '50px' }}>
+        <p className='text text_type_main-medium text_color_error'>
+          Ошибка загрузки: {error}
+        </p>
+        <button
+          onClick={() => dispatch(fetchIngredients())}
+          style={{ marginTop: '20px', cursor: 'pointer' }}
+        >
+          Попробовать снова
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <ConstructorPageUI
+      isIngredientsLoading={isLoading}
+      ingredients={ingredients}
+    />
+  );
+};

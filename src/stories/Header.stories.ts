@@ -1,29 +1,25 @@
 import type { Meta, StoryObj } from '@storybook/react';
-
 import { AppHeaderUI } from '@ui';
 
-const meta = {
-  title: 'Example/Header',
+const meta: Meta<typeof AppHeaderUI> = {
+  title: 'Components/AppHeader',
   component: AppHeaderUI,
-  // This component will have an automatically generated Autodocs entry: https://storybook.js.org/docs/writing-docs/autodocs
-  tags: ['autodocs'],
   parameters: {
-    // More on how to position stories at: https://storybook.js.org/docs/configure/story-layout
     layout: 'fullscreen'
-  }
-} satisfies Meta<typeof AppHeaderUI>;
-
-export default meta;
-type Story = StoryObj<typeof meta>;
-
-export const LoggedIn: Story = {
-  args: {
-    userName: 'John Doe'
   }
 };
 
-export const LoggedOut: Story = {
+export default meta;
+type Story = StoryObj<typeof AppHeaderUI>;
+
+export const Default: Story = {
   args: {
-    userName: undefined
+    userName: '' // ← исправлено!
+  }
+};
+
+export const WithUserName: Story = {
+  args: {
+    userName: 'Анастасия'
   }
 };
