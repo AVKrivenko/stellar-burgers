@@ -1,7 +1,6 @@
 import 'react';
 // Если там что-то есть, добавьте эти строки:
 
-
 declare module 'react' {
   interface HTMLAttributes<T> {
     onPointerEnterCapture?: (e: React.PointerEvent<T>) => void;

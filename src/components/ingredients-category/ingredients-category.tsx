@@ -35,7 +35,7 @@ export const IngredientsCategory = forwardRef<
       titleRef={titleRef}
       ingredients={ingredients}
       ingredientsCounters={ingredientsCounters}
-      ref={ref}
+      ref={ref as any}
     />
   );
 });

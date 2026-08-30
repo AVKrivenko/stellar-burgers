@@ -12,13 +12,16 @@ import {
 import { AppHeader } from '@components';
 import { ProtectedRoute } from '../protected-route';
 import { ModalUI, IngredientDetailsUI, OrderInfoUI } from '@ui';
+import { OrderInfo } from '../order-info';
+import { IngredientDetails } from '../ingredient-details';
 import { Routes, Route, useLocation, useNavigate } from 'react-router-dom';
 import { useSelector } from '../../services/store';
 import { useEffect } from 'react';
 import { getUser } from '../../services/slices/userSlice';
 import { useDispatch } from '../../services/store';
 import styles from './app.module.css';
-// import '../../index.css';
+import { TOrder, TIngredient } from '@utils-types';
+import '../../index.css';
 
 const App = () => {
   const location = useLocation();
@@ -59,14 +62,15 @@ const App = () => {
   const orderNumber = getOrderNumber();
   const orderData = orders.find((o) => o.number === orderNumber);
 
-  // Функция для подготовки данных заказа для OrderInfoUI
-  const prepareOrderInfo = (order: any) => {
+  const prepareOrderInfo = (order: TOrder | null) => {
     if (!order) return null;
 
-    const ingredientsInfo: { [key: string]: any } = {};
+    const ingredientsInfo: {
+      [key: string]: TIngredient & { count: number };
+    } = {};
     let total = 0;
 
-    order.ingredients.forEach((id: string) => {
+    order.ingredients?.forEach((id: string) => {
       const ingredient = ingredients.find((item) => item._id === id);
       if (ingredient) {
         if (!ingredientsInfo[id]) {
@@ -89,7 +93,13 @@ const App = () => {
     };
   };
 
-  const preparedOrderData = prepareOrderInfo(orderData);
+  const preparedOrderData = prepareOrderInfo(orderData || null);
+
+  const pageStyles = {
+    maxWidth: '640px',
+    margin: '0 auto',
+    padding: '40px 20px'
+  };
 
   return (
     <div className={styles.app}>
@@ -98,6 +108,18 @@ const App = () => {
       <Routes location={background || location}>
         <Route path='/' element={<ConstructorPage />} />
         <Route path='/feed' element={<Feed />} />
+
+        <Route path='/ingredients/:id' element={<IngredientDetails />} />
+
+        <Route path='/feed/:number' element={<OrderInfo />} />
+        <Route
+          path='/profile/orders/:number'
+          element={
+            <ProtectedRoute>
+              <OrderInfo />
+            </ProtectedRoute>
+          }
+        />
 
         <Route
           path='/login'
@@ -169,7 +191,10 @@ const App = () => {
           <Route
             path='/feed/:number'
             element={
-              <ModalUI onClose={handleModalClose} title='Детали заказа'>
+              <ModalUI
+                onClose={handleModalClose}
+                title={`#${String(orderNumber).padStart(6, '0')}`}
+              >
                 {preparedOrderData ? (
                   <OrderInfoUI orderInfo={preparedOrderData} />
                 ) : (
@@ -182,7 +207,10 @@ const App = () => {
             path='/profile/orders/:number'
             element={
               <ProtectedRoute>
-                <ModalUI onClose={handleModalClose} title='Детали заказа'>
+                <ModalUI
+                  onClose={handleModalClose}
+                  title={`#${String(orderNumber).padStart(6, '0')}`}
+                >
                   {preparedOrderData ? (
                     <OrderInfoUI orderInfo={preparedOrderData} />
                   ) : (

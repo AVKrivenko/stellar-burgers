@@ -2,6 +2,7 @@ import { FC, useState, useEffect } from 'react';
 import { useDispatch, useSelector } from '../../services/store';
 import { updateUser } from '../../services/slices/userSlice';
 import { ProfileUI } from '../../components/ui/pages/profile';
+import { TRegisterData } from '../../utils/burger-api';
 
 export const Profile: FC = () => {
   const dispatch = useDispatch();
@@ -38,24 +39,19 @@ export const Profile: FC = () => {
     e.preventDefault();
     setUpdateUserError(undefined);
 
-    const data: any = {};
-    if (formValue.name !== user?.name) data.name = formValue.name;
-    if (formValue.email !== user?.email) data.email = formValue.email;
-    if (formValue.password) data.password = formValue.password;
+    const updatedFields: Partial<TRegisterData> = {};
+    if (formValue.name !== user?.name) updatedFields.name = formValue.name;
+    if (formValue.email !== user?.email) updatedFields.email = formValue.email;
+    if (formValue.password) updatedFields.password = formValue.password;
 
-    if (Object.keys(data).length === 0) {
+    if (Object.keys(updatedFields).length === 0) {
       setIsFormChanged(false);
       return;
     }
 
-    dispatch(updateUser(data))
-      .unwrap()
-      .then(() => {
-        setIsFormChanged(false);
-      })
-      .catch((err) => {
-        setUpdateUserError(err.message || 'Ошибка обновления профиля');
-      });
+    dispatch(updateUser(updatedFields)).catch((err) => {
+      setUpdateUserError(err.message || 'Ошибка обновления профиля');
+    });
   };
 
   const handleCancel = () => {

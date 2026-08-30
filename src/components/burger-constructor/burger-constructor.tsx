@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from '../../services/store';
 import { TConstructorIngredient } from '@utils-types';
 import { BurgerConstructorUI } from '@ui';
-import { createOrder, clearOrderData } from '../../services/slices/userSlice';
+import { createOrder, clearOrderData } from '../../services/slices/orderSlice';
 import { clearConstructor } from '../../services/slices/constructorSlice';
 
 export const BurgerConstructor: FC = () => {
@@ -11,15 +11,13 @@ export const BurgerConstructor: FC = () => {
   const navigate = useNavigate();
 
   const { bun, ingredients } = useSelector((state) => state.burgerConstructor);
+  const { user } = useSelector((state) => state.user);
+  const { orderRequest, orderModalData } = useSelector((state) => state.order);
 
   const constructorItems = {
     bun: bun || null,
     ingredients: ingredients || []
   };
-
-  const { user, orderRequest, orderModalData } = useSelector(
-    (state) => state.user
-  );
 
   const onOrderClick = () => {
     if (!constructorItems.bun || orderRequest) return;
