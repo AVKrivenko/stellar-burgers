@@ -5,7 +5,7 @@ import { TIngredient } from '@utils-types';
 import { IngredientsCategoryUI } from '../ui/ingredients-category';
 
 export const IngredientsCategory = forwardRef<
-  HTMLLIElement,
+  HTMLUListElement,
   TIngredientsCategoryProps
 >(({ title, titleRef, ingredients }, ref) => {
   const { bun, ingredients: constructorIngredients } = useSelector(
@@ -35,7 +35,7 @@ export const IngredientsCategory = forwardRef<
       titleRef={titleRef}
       ingredients={ingredients}
       ingredientsCounters={ingredientsCounters}
-      ref={ref as any}
+      ref={ref}
     />
   );
 });
